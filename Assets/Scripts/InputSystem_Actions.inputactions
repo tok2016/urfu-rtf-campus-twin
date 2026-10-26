@@ -30,7 +30,7 @@
                     "name": "Attack",
                     "type": "Button",
                     "id": "6c2ab1b8-8984-453a-af3d-a3c78ae1679a",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false,
@@ -95,6 +95,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "ToggleFreeFly",
+                    "type": "Button",
+                    "id": "84ae575b-cf04-461c-987b-6a101286bb04",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -113,7 +123,7 @@
                     "name": "WASD",
                     "id": "00ca640b-d935-4593-8157-c05846ea39b3",
                     "path": "Dpad",
-                    "interactions": "",
+                    "interactions": "Press,Hold",
                     "processors": "",
                     "groups": "",
                     "action": "Move",
@@ -480,6 +490,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1472dbbd-220a-4f9b-ba0f-1dc490efed04",
+                    "path": "<Keyboard>/g",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "ToggleFreeFly",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

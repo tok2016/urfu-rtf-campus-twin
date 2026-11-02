@@ -136,7 +136,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Crouch"",
                     ""type"": ""Button"",
                     ""id"": ""27c5f898-bc57-4ee1-8800-db469aca5fe3"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false,
@@ -186,6 +186,56 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""ToggleFreeFly"",
                     ""type"": ""Button"",
                     ""id"": ""84ae575b-cf04-461c-987b-6a101286bb04"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ObjectDrag"",
+                    ""type"": ""Value"",
+                    ""id"": ""0d2a5290-8d4c-478b-835c-a8ae79005b3c"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ObjectSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""f98f9ea6-a0c1-4d3e-8d73-0fbf0b6a8157"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""PositionSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""5d775442-a9d4-46da-a141-40ed196424e4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""RotationSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""41c7b260-491d-42a1-b71e-eec2a4b9c9c3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ScaleSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""e3aaad87-a302-4b41-b269-d4ccc49602b9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -589,6 +639,83 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""ToggleFreeFly"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9900096c-4a56-4e94-993c-9193ccc3bc3a"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ObjectDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7b11199e-86c3-462c-86fd-c39f0532be03"",
+                    ""path"": ""<Touchscreen>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Touch"",
+                    ""action"": ""ObjectDrag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""65a3f84f-7b26-4e19-b8ce-a6feee91ad37"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ObjectSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4c85f6b4-e475-4aea-9bd1-f8bd49514c06"",
+                    ""path"": ""<Touchscreen>/Press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Touch"",
+                    ""action"": ""ObjectSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b7d87da1-95bd-47d5-af6f-f843984db627"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""PositionSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f534afe3-4107-4b90-ac5c-ea17201a230b"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotationSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b978639c-a801-4264-81da-a45d9a2e5f71"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ScaleSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -620,7 +747,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
                     ""id"": ""15cef263-9014-4fd5-94d9-4e4a6234a6ef"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false,
@@ -1194,6 +1321,11 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_ToggleFreeFly = m_Player.FindAction("ToggleFreeFly", throwIfNotFound: true);
+        m_Player_ObjectDrag = m_Player.FindAction("ObjectDrag", throwIfNotFound: true);
+        m_Player_ObjectSelect = m_Player.FindAction("ObjectSelect", throwIfNotFound: true);
+        m_Player_PositionSelect = m_Player.FindAction("PositionSelect", throwIfNotFound: true);
+        m_Player_RotationSelect = m_Player.FindAction("RotationSelect", throwIfNotFound: true);
+        m_Player_ScaleSelect = m_Player.FindAction("ScaleSelect", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1297,6 +1429,11 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_ToggleFreeFly;
+    private readonly InputAction m_Player_ObjectDrag;
+    private readonly InputAction m_Player_ObjectSelect;
+    private readonly InputAction m_Player_PositionSelect;
+    private readonly InputAction m_Player_RotationSelect;
+    private readonly InputAction m_Player_ScaleSelect;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1348,6 +1485,26 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/ToggleFreeFly".
         /// </summary>
         public InputAction @ToggleFreeFly => m_Wrapper.m_Player_ToggleFreeFly;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ObjectDrag".
+        /// </summary>
+        public InputAction @ObjectDrag => m_Wrapper.m_Player_ObjectDrag;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ObjectSelect".
+        /// </summary>
+        public InputAction @ObjectSelect => m_Wrapper.m_Player_ObjectSelect;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/PositionSelect".
+        /// </summary>
+        public InputAction @PositionSelect => m_Wrapper.m_Player_PositionSelect;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/RotationSelect".
+        /// </summary>
+        public InputAction @RotationSelect => m_Wrapper.m_Player_RotationSelect;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ScaleSelect".
+        /// </summary>
+        public InputAction @ScaleSelect => m_Wrapper.m_Player_ScaleSelect;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1404,6 +1561,21 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @ToggleFreeFly.started += instance.OnToggleFreeFly;
             @ToggleFreeFly.performed += instance.OnToggleFreeFly;
             @ToggleFreeFly.canceled += instance.OnToggleFreeFly;
+            @ObjectDrag.started += instance.OnObjectDrag;
+            @ObjectDrag.performed += instance.OnObjectDrag;
+            @ObjectDrag.canceled += instance.OnObjectDrag;
+            @ObjectSelect.started += instance.OnObjectSelect;
+            @ObjectSelect.performed += instance.OnObjectSelect;
+            @ObjectSelect.canceled += instance.OnObjectSelect;
+            @PositionSelect.started += instance.OnPositionSelect;
+            @PositionSelect.performed += instance.OnPositionSelect;
+            @PositionSelect.canceled += instance.OnPositionSelect;
+            @RotationSelect.started += instance.OnRotationSelect;
+            @RotationSelect.performed += instance.OnRotationSelect;
+            @RotationSelect.canceled += instance.OnRotationSelect;
+            @ScaleSelect.started += instance.OnScaleSelect;
+            @ScaleSelect.performed += instance.OnScaleSelect;
+            @ScaleSelect.canceled += instance.OnScaleSelect;
         }
 
         /// <summary>
@@ -1445,6 +1617,21 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @ToggleFreeFly.started -= instance.OnToggleFreeFly;
             @ToggleFreeFly.performed -= instance.OnToggleFreeFly;
             @ToggleFreeFly.canceled -= instance.OnToggleFreeFly;
+            @ObjectDrag.started -= instance.OnObjectDrag;
+            @ObjectDrag.performed -= instance.OnObjectDrag;
+            @ObjectDrag.canceled -= instance.OnObjectDrag;
+            @ObjectSelect.started -= instance.OnObjectSelect;
+            @ObjectSelect.performed -= instance.OnObjectSelect;
+            @ObjectSelect.canceled -= instance.OnObjectSelect;
+            @PositionSelect.started -= instance.OnPositionSelect;
+            @PositionSelect.performed -= instance.OnPositionSelect;
+            @PositionSelect.canceled -= instance.OnPositionSelect;
+            @RotationSelect.started -= instance.OnRotationSelect;
+            @RotationSelect.performed -= instance.OnRotationSelect;
+            @RotationSelect.canceled -= instance.OnRotationSelect;
+            @ScaleSelect.started -= instance.OnScaleSelect;
+            @ScaleSelect.performed -= instance.OnScaleSelect;
+            @ScaleSelect.canceled -= instance.OnScaleSelect;
         }
 
         /// <summary>
@@ -1815,6 +2002,41 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToggleFreeFly(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ObjectDrag" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnObjectDrag(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ObjectSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnObjectSelect(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PositionSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPositionSelect(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RotationSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotationSelect(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ScaleSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnScaleSelect(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

@@ -6,41 +6,49 @@ public class ObjectPicker : MonoBehaviour
 {
     [SerializeField] private RuntimeTransformController _transformController;
     [SerializeField] private InputActionReference _selectAction, _dragAction;
-    [SerializeField] private LayerMask _draggableMask, _wallMask;
+    [SerializeField] private LayerMask _draggableMask, _wallHandlersMask, _wallMask;
     [SerializeField] private float _maxDistance;
-    private DraggableObject _draggableObject;
+
+    private Transform _hoveredTarget;
+    private IDraggable _draggableObject;
 
     void Update()
     {
-        if (_draggableObject != null && _selectAction.action.IsPressed())
-        {
-            RaycastHit ray = new RaycastHit();
-            var hit = Physics.Raycast(
-                Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()), 
-                out ray, 
-                _maxDistance, 
-                _wallMask);
+        if (_transformController.IsInteracting) return;
 
-            if (hit)
+        if(_selectAction.action.IsPressed())
+        {
+            if (_draggableObject != null)
             {
-                _draggableObject.Move(ray.point, ray.normal);
+                RaycastHit hit;
+                var hitted = Physics.Raycast(
+                    Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()), 
+                    out hit, 
+                    _maxDistance, 
+                    _wallHandlersMask);
+
+                if (hitted && DoesHaveTheLayer(_wallMask, hit.transform.gameObject.layer))
+                {
+                    _draggableObject.Drag(hit.point, new Surface(hit.normal, hit.transform));
+                }
             }
         }
+        else
+        {
+            RaycastHit hit = new RaycastHit();
+            var hitted = Physics.Raycast(
+                Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()),
+                out hit);
+
+            _hoveredTarget = hit.transform;
+        }
+        
 
         if (_selectAction.action.WasPerformedThisFrame())
         {
-            RaycastHit ray = new RaycastHit();
-            var hit = Physics.Raycast(
-                Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()),
-                out ray);
-
-            if (hit && DoesMashHaveTheLayer(_draggableMask, ray.transform.gameObject.layer))
+            if (_hoveredTarget && DoesHaveTheLayer(_draggableMask, _hoveredTarget.gameObject.layer))
             {
-                _draggableObject = ray.collider.GetComponent<DraggableObject>();
-                if (_draggableObject)
-                {
-                    _transformController.AttachTarget(_draggableObject.transform);
-                }
+                _draggableObject = _hoveredTarget.parent.GetComponent<IDraggable>();
             }
             else
             {
@@ -52,12 +60,14 @@ public class ObjectPicker : MonoBehaviour
 
         if (_selectAction.action.WasCompletedThisFrame())
         {
-            _draggableObject?.LetGo();
+            if (_draggableObject != null)
+            {
+                _draggableObject.LetGo();
+                _transformController.AttachTarget(_draggableObject);
+            }
             _draggableObject = null;
         }
-
-        
     }
 
-    private bool DoesMashHaveTheLayer(LayerMask mask, int layer) => (mask & (1 << layer)) != 0;
+    private bool DoesHaveTheLayer(LayerMask mask, int layer) => (mask & (1 << layer)) != 0;
 }

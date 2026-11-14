@@ -1,5 +1,9 @@
 using System.Linq;
 using UnityEngine;
+
+/// <summary>
+/// Представляет поверхность (плоскость) с нормалью и Transform.
+/// </summary>
 public struct Surface
 {
     public Surface(Vector3 normal, Transform transform)
@@ -12,24 +16,24 @@ public struct Surface
     public Transform transform;
 }
 
+/// <summary>
+/// Представляет объект, который можно перетаскивать и трансформировать.
+/// </summary>
 public class DraggableObject : MonoBehaviour, IDraggable
 {
-    [SerializeField] private RotatableObject _rotatable;
     private Material[] _materials;
 
-    private Vector3? _prevTarget;
+    [field: SerializeField] public LayerMask SurfaceLayers { get; private set; }
+
+    [SerializeField] private BindableObject _binding;
     private Surface _surface;
-    public float minScale, maxScale;
-    private Vector2 xScaleLimit, yScaleLimit, zScaleLimit;
 
-    [ColorUsage(false, true)]
-    public Color intersectionColor;
-
+    private Vector3? _prevTarget;
+    private Vector3 _startScale;
     private Vector3 _prevScale, _prevPosition;
     private Quaternion _prevRotation;
 
     private bool _isIntersecting = false;
-
     public bool IsIntersecting
     {
         get
@@ -40,9 +44,14 @@ public class DraggableObject : MonoBehaviour, IDraggable
         {
             _isIntersecting = value;
             foreach (var material in _materials)
-                material.SetColor("_EmissionColor", value ? intersectionColor : Color.black);
+                material.SetColor("_EmissionColor", value ? Constants.Instance.ObjectWarningHighlight : Color.black);
         }
     }
+
+    public Transform ObjectTransform => transform;
+
+    public ITransformable ObjectToTransform => this;
+    public IDraggable ObjectToDrag => this;
 
     private void Awake()
     {
@@ -54,17 +63,19 @@ public class DraggableObject : MonoBehaviour, IDraggable
     {
         _surface = new Surface(Vector3.zero, null);
 
-        _prevScale = transform.localScale;
+        _startScale = transform.localScale;
+
+        _prevScale = _startScale;
         _prevPosition = transform.position;
         _prevRotation = transform.rotation;
-
-        xScaleLimit = new Vector2(transform.localScale.x * minScale, transform.localScale.x * maxScale);
-        yScaleLimit = new Vector2(transform.localScale.y * minScale, transform.localScale.y * maxScale);
-        zScaleLimit = new Vector2(transform.localScale.z * minScale, transform.localScale.z * maxScale);
     }
 
-    public Transform ObjectTransform => transform;
-
+    /// <summary>
+    /// Размещает объект в указанной точке переданной поверхности.
+    /// Поворачивает объект так, чтобы он прикрепился нижней гранью к поверхности.
+    /// </summary>
+    /// <param name="target">Точка размещения объекта на поверхности.</param>
+    /// <param name="surface">Поверхность, на которую нужно разместить объект.</param>
     public void Drag(Vector3 target, Surface surface)
     {
         Vector3 forward = Vector3.ProjectOnPlane(transform.forward, surface.normal);
@@ -86,10 +97,13 @@ public class DraggableObject : MonoBehaviour, IDraggable
         _prevTarget = target;
         _surface = surface;
 
-        IsIntersecting = _rotatable.CheckIntersection(_surface, transform.localScale);
+        IsIntersecting = _binding.CheckIntersection(_surface, transform.localScale);
     }
 
-    public void LetGo()
+    /// <summary>
+    /// Отменяет трансформацию, если объект был отпущен, когда он пересекается с другими или не размещён на поверхности.
+    /// </summary>
+    public void OnTransformStop()
     {
         _prevTarget = null;
 
@@ -106,18 +120,21 @@ public class DraggableObject : MonoBehaviour, IDraggable
             _prevScale = transform.localScale;
         }
 
-        _rotatable.LetGo(IsIntersecting);
+        _binding.OnRelease(IsIntersecting);
         IsIntersecting = false;
     }
 
-    public void Hover()
+    public void OnSelect()
     {
 
     }
 
+    /// <summary>
+    /// Проверяет при перемещении, есть ли под объектом (в локальном пространстве) поверхность и пересекается ли он с другими.
+    /// </summary>
     public void OnMove()
     {
-        var surface = _rotatable.GetNearestSurface(transform.localScale);
+        var surface = _binding.GetNearestSurface(transform.localScale, SurfaceLayers);
 
         if(surface.transform)
         {
@@ -130,15 +147,21 @@ public class DraggableObject : MonoBehaviour, IDraggable
             _surface.transform = null;
         }
 
-        IsIntersecting = _rotatable.CheckIntersection(surface, transform.localScale);
+        IsIntersecting = _binding.CheckIntersection(surface, transform.localScale);
     }
 
+    /// <summary>
+    /// Вращает дочерний объект и проверяет пересечение с другими при вращении.
+    /// </summary>
     public void OnRotate()
     {
-        _rotatable.OnRotate(_surface.normal);
-        IsIntersecting = _rotatable.CheckIntersection(_surface, transform.localScale);
+        _binding.OnRotate(_surface.normal);
+        IsIntersecting = _binding.CheckIntersection(_surface, transform.localScale);
     }
 
+    /// <summary>
+    /// Пропорционально увеличивает все измерения объекта при увеличении одной из них. Проверяет пересечение с другими объектами.
+    /// </summary>
     public void OnScale()
     {
         //RealtimeTransformHandle при изменении масштаба вдоль одной оси сохраняет первоначальне значения масштаба других осей.
@@ -152,10 +175,23 @@ public class DraggableObject : MonoBehaviour, IDraggable
             scaleMult = Mathf.Min(scaleDiff.x, scaleDiff.y, scaleDiff.z);
 
         transform.localScale = new Vector3(
-            Mathf.Clamp(transform.localScale.x * scaleMult / scaleDiff.x, xScaleLimit.x, xScaleLimit.y),
-            Mathf.Clamp(transform.localScale.y * scaleMult / scaleDiff.y, yScaleLimit.x, yScaleLimit.y),
-            Mathf.Clamp(transform.localScale.z * scaleMult / scaleDiff.z, zScaleLimit.x, zScaleLimit.y));
+            ClampAxisScale(transform.localScale.x * scaleMult / scaleDiff.x, _startScale.x),
+            ClampAxisScale(transform.localScale.y * scaleMult / scaleDiff.y, _startScale.y),
+            ClampAxisScale(transform.localScale.z * scaleMult / scaleDiff.z, _startScale.z)
+        );
 
-        IsIntersecting = _rotatable.CheckIntersection(_surface, transform.localScale);
+        IsIntersecting = _binding.CheckIntersection(_surface, transform.localScale);
     }
+
+    /// <summary>
+    /// Ограничивает размер измерения размера объекта.
+    /// </summary>
+    /// <param name="axisScale">Значение размера измерения / оси размера.</param>
+    /// <param name="startAxisScale">Изначальное значение размера измерения / оси размера.</param>
+    /// <returns></returns>
+    private float ClampAxisScale(float axisScale, float startAxisScale) => Mathf.Clamp(
+            axisScale,
+            startAxisScale * Constants.Instance.MinObjectScale,
+            startAxisScale * Constants.Instance.MaxObjectScale
+        );
 }

@@ -1,73 +1,120 @@
-using RuntimeHandle;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class ObjectPicker : MonoBehaviour
 {
-    [SerializeField] private RuntimeTransformController _transformController;
-    [SerializeField] private InputActionReference _selectAction, _dragAction;
-    [SerializeField] private LayerMask _draggableMask, _wallHandlersMask, _wallMask;
-    [SerializeField] private float _maxDistance;
+    [SerializeField] private float _rayMaxDistance = 1000;
+    private bool _wasHoveredOnHandler = false;
 
-    private Transform _hoveredTarget;
-    private IDraggable _draggableObject;
+    public static Action<ITransformable> OnObjectSelected;
+    public static Action OnObjectRelease;
+
+    [Header("Pick input")]
+    [SerializeField] private InputActionReference _selectAction;
+    [SerializeField] private InputActionReference _dragAction;
+
+    [Header("Pick layers")]
+    [SerializeField] private LayerMask _layersToSelect;
+    [SerializeField] private LayerMask _handlersMask;
+
+    private ITransformable _transformable;
 
     void Update()
     {
-        if (_transformController.IsInteracting) return;
+        if (IsInteractingWithHandlers()) return;
 
-        if(_selectAction.action.IsPressed())
+        CheckSelectDragging();
+        CheckSelection();
+        CheckSelectionRelease();
+    }
+
+    /// <summary>
+    /// Проверяет, взаимодействует ли игрок с гизмо трансформации.
+    /// </summary>
+    /// <returns>True, если было наведение на гизмо и его зажатие.</returns>
+    private bool IsInteractingWithHandlers()
+    {
+        if(!_selectAction.action.IsPressed())
+            _wasHoveredOnHandler = Physics.Raycast(
+                Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()),
+                _rayMaxDistance,
+                _handlersMask
+            );
+
+        return _selectAction.action.IsPressed() && _wasHoveredOnHandler;
+    }
+
+    /// <summary>
+    /// Проверяет, было ли наведение на поверхность, с которой может взаимодействовать выбранный объект, при удержании нажатия.
+    /// Если да, переносит объект в точку пересечения с поверхностью и прикрепляет его е ней.
+    /// </summary>
+    private void CheckSelectDragging()
+    {
+        if (_selectAction.action.IsPressed())
         {
-            if (_draggableObject != null)
+            if (_transformable?.ObjectToDrag != null)
             {
                 RaycastHit hit;
                 var hitted = Physics.Raycast(
-                    Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()), 
-                    out hit, 
-                    _maxDistance, 
-                    _wallHandlersMask);
+                    Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()),
+                    out hit,
+                    _rayMaxDistance,
+                    _transformable.ObjectToDrag.SurfaceLayers | _handlersMask);
 
-                if (hitted && DoesHaveTheLayer(_wallMask, hit.transform.gameObject.layer))
-                {
-                    _draggableObject.Drag(hit.point, new Surface(hit.normal, hit.transform));
-                }
+                if (hitted 
+                    && Constants.Instance.DoesHaveTheLayer(
+                        _transformable.ObjectToDrag.SurfaceLayers, 
+                        hit.transform.gameObject.layer)
+                    )
+                    _transformable.ObjectToDrag.Drag(hit.point, new Surface(hit.normal, hit.transform));
             }
-        }
-        else
-        {
-            RaycastHit hit = new RaycastHit();
-            var hitted = Physics.Raycast(
-                Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()),
-                out hit);
-
-            _hoveredTarget = hit.transform;
-        }
-        
-
-        if (_selectAction.action.WasPerformedThisFrame())
-        {
-            if (_hoveredTarget && DoesHaveTheLayer(_draggableMask, _hoveredTarget.gameObject.layer))
-            {
-                _draggableObject = _hoveredTarget.parent.GetComponent<IDraggable>();
-            }
-            else
-            {
-                _draggableObject?.LetGo();
-                _draggableObject = null;
-                _transformController.DetachTarget();
-            }
-        }
-
-        if (_selectAction.action.WasCompletedThisFrame())
-        {
-            if (_draggableObject != null)
-            {
-                _draggableObject.LetGo();
-                _transformController.AttachTarget(_draggableObject);
-            }
-            _draggableObject = null;
         }
     }
 
-    private bool DoesHaveTheLayer(LayerMask mask, int layer) => (mask & (1 << layer)) != 0;
+    /// <summary>
+    /// Проверяет, было ли нажатие на какой-нибудь объект, который можно выбрать.
+    /// </summary>
+    private void CheckSelection()
+    {
+        if (_selectAction.action.WasPerformedThisFrame())
+        {
+            RaycastHit hit;
+            var hitted = Physics.Raycast(
+                Camera.main.ScreenPointToRay(_dragAction.action.ReadValue<Vector2>()),
+                out hit,
+                _rayMaxDistance,
+                _layersToSelect);
+
+            if (hitted)
+            {
+                var handleable = hit.transform.GetComponent<IHandleable>();
+                _transformable = handleable?.ObjectToTransform;
+            }
+            else
+            {
+                _transformable?.OnTransformStop();
+                _transformable = null;
+
+                OnObjectRelease?.Invoke();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Проверяет, было ли снятие нажатия. Если да, прекращает перетаскивание объекта.
+    /// </summary>
+    private void CheckSelectionRelease()
+    {
+        if (_selectAction.action.WasCompletedThisFrame())
+        {
+            if (_transformable != null)
+            {
+                _transformable.OnTransformStop();
+                OnObjectSelected?.Invoke(_transformable);
+            }
+
+            _transformable = null;
+        }
+    }
 }

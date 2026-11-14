@@ -1,14 +1,17 @@
-using RuntimeHandle;
 using UnityEngine;
 
-public interface IDraggable
+/// <summary>
+/// Поведение для любых классов, чьи объекты можно перетаскивать.
+/// </summary>
+public interface IDraggable : ITransformable
 {
-    public bool IsIntersecting { get; set; }
-    public Transform ObjectTransform { get; }
+    /// <value>Слои поверхностей, на которые объект может быть размещён.</value>
+    public LayerMask SurfaceLayers { get; }
+
+    /// <summary>
+    /// Размещает объект в целевой точке переданной поверхности.
+    /// </summary>
+    /// <param name="target">Точка размещения объекта на поверхности.</param>
+    /// <param name="surface">Поверхность, на которую нужно разместить объект.</param>
     public void Drag(Vector3 target, Surface surface);
-    public void LetGo();
-    public void Hover();
-    public void OnMove();
-    public void OnRotate();
-    public void OnScale();
 }

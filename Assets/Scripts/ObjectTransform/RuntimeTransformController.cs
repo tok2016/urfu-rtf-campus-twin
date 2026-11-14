@@ -1,17 +1,24 @@
 using RuntimeHandle;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Контролирует взаимодействие с RuntimeTransformHandle - внутриигровое гизмо для трансформации объектов.
+/// </summary>
 public class RuntimeTransformController : MonoBehaviour
 {
-    [SerializeField] private RuntimeTransformHandle _transformHandle, _additionalHandle;
-    [SerializeField] private InputActionReference _positionButton, _rotationButton, _scaleButton;
-    private HandleAxes _movementAxes = HandleAxes.XZ;
+    [Header("Transform handlers")]
+    [SerializeField] private RuntimeTransformHandle _transformHandle;
+    [SerializeField] private RuntimeTransformHandle _additionalHandle;
 
-    private IDraggable _currentTarget;
+    [Header("Handle type hot keys")]
+    [SerializeField] private InputActionReference _positionButton;
+    [SerializeField] private InputActionReference _rotationButton, _scaleButton;
 
+    private ITransformable _currentTarget;
+
+    /// <value>Оси, которые можно трансформировать.</value>
     public HandleAxes Axes 
     { 
         get 
@@ -25,6 +32,9 @@ public class RuntimeTransformController : MonoBehaviour
         }
     }
 
+    private HandleAxes _movementAxes = HandleAxes.XZ;
+
+    /// <value>Оси, вдоль которых можно перемещать объект.</value>
     public HandleAxes MovementAxes 
     {  
         get 
@@ -39,7 +49,8 @@ public class RuntimeTransformController : MonoBehaviour
         } 
     }
 
-    public HandleType Type
+    /// <value>Тип трансформации.</value>
+    public HandleType TransformType
     {
         get 
         { 
@@ -67,8 +78,6 @@ public class RuntimeTransformController : MonoBehaviour
         }
     }
 
-    public bool IsInteracting { get; private set; } = false;
-
     void Start()
     {
         MovementAxes = Axes;
@@ -80,8 +89,17 @@ public class RuntimeTransformController : MonoBehaviour
         _positionButton.action.performed += SetPositionType;
         _rotationButton.action.performed += SetRotationType;
         _scaleButton.action.performed += SetScaleType;
+
+        ObjectPicker.OnObjectSelected += AttachTarget;
+        ObjectPicker.OnObjectRelease += DetachTarget;
     }
 
+    /// <summary>
+    /// Изменяет слои всех гизмо.
+    /// RuntimeTransformHandle создаёт гизмо только в режиме игре и с дефолтным слоем,
+    /// поэтому это единственный способ поменять всем гизмо слои.
+    /// </summary>
+    /// <param name="parent">Родительский объект, у дочерних объектов которого нужно поменять слои.</param>
     private void ChangeChildrenLayers(Transform parent)
     {
         foreach (Transform child in parent)
@@ -91,7 +109,11 @@ public class RuntimeTransformController : MonoBehaviour
         }
     }
 
-    public void AttachTarget(IDraggable target)
+    /// <summary>
+    /// Назначает RuntimeTransformHandle переданный трансформируемый объект, чтобы отобразить гизмо.
+    /// </summary>
+    /// <param name="target">Объект, для которого нужно отобразить гизмо для трансформации.</param>
+    public void AttachTarget(ITransformable target)
     {
         if (target == null)
             DetachTarget();
@@ -102,7 +124,7 @@ public class RuntimeTransformController : MonoBehaviour
             _additionalHandle.target = _currentTarget.ObjectTransform.GetChild(0);
 
             _transformHandle.gameObject.SetActive(true);
-            _additionalHandle.gameObject.SetActive(_transformHandle.gameObject.activeInHierarchy && Type == HandleType.ROTATION);
+            _additionalHandle.gameObject.SetActive(_transformHandle.gameObject.activeInHierarchy && TransformType == HandleType.ROTATION);
 
             AttachHandleDragEvents(target);
 
@@ -110,6 +132,9 @@ public class RuntimeTransformController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Снимает объект с RuntimeTransformHandle, чтобы спрятать гизмо.
+    /// </summary>
     public void DetachTarget()
     {
         DetachHandleDragEvents();
@@ -123,25 +148,43 @@ public class RuntimeTransformController : MonoBehaviour
         _currentTarget = null;
     }
 
+    /// <summary>
+    /// Меняет тип трансформации на перемещение.
+    /// </summary>
     public void SetPositionType()
     {
-        Type = HandleType.POSITION;
+        TransformType = HandleType.POSITION;
     }
 
+    /// <summary>
+    /// Меняет тип трансформации на перемещение.
+    /// </summary>
     public void SetPositionType(InputAction.CallbackContext context) => SetPositionType();
 
+    /// <summary>
+    /// Меняет тип трансформации на вращение.
+    /// </summary>
     public void SetRotationType()
     {
-        Type = HandleType.ROTATION;
+        TransformType = HandleType.ROTATION;
     }
 
+    /// <summary>
+    /// Меняет тип трансформации на вращение.
+    /// </summary>
     public void SetRotationType(InputAction.CallbackContext context) => SetRotationType();
 
+    /// <summary>
+    /// Меняет тип трансформации на масштабирование.
+    /// </summary>
     public void SetScaleType()
     {
-        Type = HandleType.SCALE;
+        TransformType = HandleType.SCALE;
     }
 
+    /// <summary>
+    /// Меняет тип трансформации на масштабирование.
+    /// </summary>
     public void SetScaleType(InputAction.CallbackContext context) => SetScaleType();
 
     private void OnDisable()
@@ -149,8 +192,15 @@ public class RuntimeTransformController : MonoBehaviour
         _positionButton.action.performed -= SetPositionType;
         _rotationButton.action.performed -= SetRotationType;
         _scaleButton.action.performed -= SetScaleType;
+
+        ObjectPicker.OnObjectSelected -= AttachTarget;
+        ObjectPicker.OnObjectRelease -= DetachTarget;
     }
 
+    /// <summary>
+    /// Ждёт один кадр, чтобы поменять слои гизмо.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator WaitForLayersToChange()
     {
         yield return new WaitForSeconds(1);
@@ -158,12 +208,13 @@ public class RuntimeTransformController : MonoBehaviour
         ChangeChildrenLayers(_additionalHandle.transform);
     }
 
-    private void AttachHandleDragEvents(IDraggable target)
+    /// <summary>
+    /// Назначает обработчики событий для RuntimeTransformHandle.
+    /// </summary>
+    /// <param name="target">Объект, для которого отображается гизмо для трансформации.</param>
+    private void AttachHandleDragEvents(ITransformable target)
     {
-        _transformHandle.startedDraggingHandle.AddListener(OnHandleGrabStart);
-        _additionalHandle.startedDraggingHandle.AddListener(OnHandleGrabStart);
-
-        switch(Type)
+        switch(TransformType)
         {
             case HandleType.POSITION:
                 _transformHandle.isDraggingHandle.AddListener(target.OnMove);
@@ -181,11 +232,11 @@ public class RuntimeTransformController : MonoBehaviour
         _additionalHandle.endedDraggingHandle.AddListener(OnHandleGrabEnd);
     }
 
+    /// <summary>
+    /// Снимает все обработчики событий с RuntimeTransformHandle.
+    /// </summary>
     private void DetachHandleDragEvents()
     {
-        _transformHandle.startedDraggingHandle.RemoveAllListeners();
-        _additionalHandle.startedDraggingHandle.RemoveAllListeners();
-
         _transformHandle.isDraggingHandle.RemoveAllListeners();
         _additionalHandle.isDraggingHandle.RemoveAllListeners();
 
@@ -193,14 +244,11 @@ public class RuntimeTransformController : MonoBehaviour
         _additionalHandle.endedDraggingHandle.RemoveAllListeners();
     }
 
-    private void OnHandleGrabStart()
-    {
-        IsInteracting = true;
-    }
-
+    /// <summary>
+    /// Передаёт прекрещение трансформирование целевому объекту.
+    /// </summary>
     private void OnHandleGrabEnd()
     {
-        IsInteracting = false;
-        _currentTarget?.LetGo();
+        _currentTarget?.OnTransformStop();
     }
 }

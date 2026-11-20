@@ -55,8 +55,7 @@ public class DraggableObject : MonoBehaviour, IDraggable
 
     private void Awake()
     {
-        var renderers = GetComponentsInChildren<MeshRenderer>();
-        _materials = renderers.Select(x => x.material).ToArray();
+        Initialize(_binding);
     }
 
     private void Start()
@@ -68,6 +67,13 @@ public class DraggableObject : MonoBehaviour, IDraggable
         _prevScale = _startScale;
         _prevPosition = transform.position;
         _prevRotation = transform.rotation;
+    }
+
+    public void Initialize(BindableObject bindable)
+    {
+        _binding = bindable;
+        var renderers = GetComponentsInChildren<MeshRenderer>();
+        _materials = renderers.Select(x => x.material).ToArray();
     }
 
     /// <summary>
@@ -121,7 +127,7 @@ public class DraggableObject : MonoBehaviour, IDraggable
         }
 
         _binding.OnRelease(IsIntersecting);
-        IsIntersecting = false;
+        IsIntersecting = _binding.CheckIntersection(_surface, transform.localScale);
     }
 
     public void OnSelect()
@@ -181,6 +187,14 @@ public class DraggableObject : MonoBehaviour, IDraggable
         );
 
         IsIntersecting = _binding.CheckIntersection(_surface, transform.localScale);
+    }
+
+    public Vector3 GetNeighbourPosition(Vector2 direction)
+    {
+        var bindingSize = _binding.GetCurrentGlobalScale(transform.localScale);
+        var localPosition = new Vector3(bindingSize.x * direction.x, 0, bindingSize.z * direction.y);
+
+        return transform.TransformPoint(localPosition);
     }
 
     /// <summary>

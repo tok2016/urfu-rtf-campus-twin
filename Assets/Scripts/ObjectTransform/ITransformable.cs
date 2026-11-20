@@ -35,4 +35,14 @@ public interface ITransformable : IHandleable
     /// Совершает действия при масштабировании объекта.
     /// </summary>
     public void OnScale();
+
+    /// <summary>
+    /// Вычисляет случайную позицию рядом с объектом на той же поверхности.
+    /// </summary>
+    /// <param name="direction">
+    /// Направление от центра объекта в двумерной плоскость.
+    /// Определяет, в какую сторону от центра объекта найти точку.
+    /// </param>
+    /// <returns>Случайная позиция рядом с объектом на той же поверхности.</returns>
+    public Vector3 GetNeighbourPosition(Vector2 direction);
 }

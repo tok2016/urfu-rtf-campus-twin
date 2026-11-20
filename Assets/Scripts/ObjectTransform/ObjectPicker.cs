@@ -7,8 +7,8 @@ public class ObjectPicker : MonoBehaviour
     [SerializeField] private float _rayMaxDistance = 1000;
     private bool _wasHoveredOnHandler = false;
 
-    public static Action<ITransformable> OnObjectSelected;
-    public static Action OnObjectRelease;
+    public static Action<ITransformable> ObjectSelected;
+    public static Action ObjectReleased;
 
     [Header("Pick input")]
     [SerializeField] private InputActionReference _selectAction;
@@ -27,6 +27,12 @@ public class ObjectPicker : MonoBehaviour
         CheckSelectDragging();
         CheckSelection();
         CheckSelectionRelease();
+    }
+
+    private void OnEnable()
+    {
+        ObjectBuffer.ObjectPasted += OnObjectPasted;
+        ObjectBuffer.ObjectDeleted += OnObjectDeleted;
     }
 
     /// <summary>
@@ -92,12 +98,7 @@ public class ObjectPicker : MonoBehaviour
                 _transformable = handleable?.ObjectToTransform;
             }
             else
-            {
-                _transformable?.OnTransformStop();
-                _transformable = null;
-
-                OnObjectRelease?.Invoke();
-            }
+                ReleaseCurrentObject();
         }
     }
 
@@ -107,14 +108,55 @@ public class ObjectPicker : MonoBehaviour
     private void CheckSelectionRelease()
     {
         if (_selectAction.action.WasCompletedThisFrame())
-        {
-            if (_transformable != null)
-            {
-                _transformable.OnTransformStop();
-                OnObjectSelected?.Invoke(_transformable);
-            }
+            SelectCurrentObject();   
+    }
 
-            _transformable = null;
+    /// <summary>
+    /// Выбирает объект и удаляет ссылку на него, чтобы его не перетаскивали.
+    /// </summary>
+    private void SelectCurrentObject()
+    {
+        if (_transformable != null)
+        {
+            _transformable.OnTransformStop();
+            ObjectSelected?.Invoke(_transformable);
         }
+
+        _transformable = null;
+    }
+
+    /// <summary>
+    /// Отпускает выбранный объект и удаляет ссылку на него.
+    /// </summary>
+    private void ReleaseCurrentObject()
+    {
+        _transformable?.OnTransformStop();
+        _transformable = null;
+
+        ObjectReleased?.Invoke();
+    }
+
+    /// <summary>
+    /// Выбирает только что вставленный объект.
+    /// </summary>
+    /// <param name="newObject">Новый объект, который нужно выбрать.</param>
+    private void OnObjectPasted(ITransformable newObject)
+    {
+        _transformable = newObject;
+        SelectCurrentObject();
+    }
+
+    /// <summary>
+    /// Отпускает текущий объект.
+    /// </summary>
+    private void OnObjectDeleted()
+    {
+        ReleaseCurrentObject();
+    }
+
+    private void OnDisable()
+    {
+        ObjectBuffer.ObjectPasted -= OnObjectPasted;
+        ObjectBuffer.ObjectDeleted -= OnObjectDeleted;
     }
 }

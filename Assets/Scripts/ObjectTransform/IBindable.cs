@@ -35,4 +35,18 @@ public interface IBindable : IHandleable
     /// </summary>
     /// <param name="surfaceNormal">Поверхность, на которой размещён объект.</param>
     public void OnRotate(Vector3 surfaceNormal);
+
+    /// <summary>
+    /// Assigns main dependencies.
+    /// </summary>
+    /// <param name="collider">Box collider of object.</param>
+    /// <param name="objectToTransform">Object to move and scale.</param>
+    public void Initialize(BoxCollider collider, ITransformable objectToTransform);
+
+    /// <summary>
+    /// Рассчитывает реальный текущий размер объекта в глобальном пространстве.
+    /// </summary>
+    /// <param name="parentLocalScale">Локальный масштаб родительского объекта.</param>
+    /// <returns>Размер объекта в глобальном пространстве.</returns>
+    public Vector3 GetCurrentGlobalScale(Vector3 parentLocalScale);
 }

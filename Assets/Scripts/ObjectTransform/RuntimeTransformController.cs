@@ -90,8 +90,8 @@ public class RuntimeTransformController : MonoBehaviour
         _rotationButton.action.performed += SetRotationType;
         _scaleButton.action.performed += SetScaleType;
 
-        ObjectPicker.OnObjectSelected += AttachTarget;
-        ObjectPicker.OnObjectRelease += DetachTarget;
+        ObjectPicker.ObjectSelected += AttachTarget;
+        ObjectPicker.ObjectReleased += DetachTarget;
     }
 
     /// <summary>
@@ -193,8 +193,8 @@ public class RuntimeTransformController : MonoBehaviour
         _rotationButton.action.performed -= SetRotationType;
         _scaleButton.action.performed -= SetScaleType;
 
-        ObjectPicker.OnObjectSelected -= AttachTarget;
-        ObjectPicker.OnObjectRelease -= DetachTarget;
+        ObjectPicker.ObjectSelected -= AttachTarget;
+        ObjectPicker.ObjectReleased -= DetachTarget;
     }
 
     /// <summary>

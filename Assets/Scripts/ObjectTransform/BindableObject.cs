@@ -19,8 +19,7 @@ public class BindableObject : MonoBehaviour, IBindable
 
     private void Awake()
     {
-        _collider = GetComponent<BoxCollider>();
-        ObjectToTransform = transform.GetComponentInParent<ITransformable>();
+        Initialize(GetComponent<BoxCollider>(), transform.GetComponentInParent<ITransformable>());
     }
 
     void Start()
@@ -29,6 +28,12 @@ public class BindableObject : MonoBehaviour, IBindable
         _startChildScale = _collider.bounds.size;
         _prevRotation = transform.rotation;
         _prevChildPosition = _child?.localPosition ?? Vector3.zero;
+    }
+
+    public void Initialize(BoxCollider collider, ITransformable objectToTransform)
+    {
+        _collider = collider;
+        ObjectToTransform = objectToTransform;
     }
 
     /// <summary>
@@ -96,12 +101,7 @@ public class BindableObject : MonoBehaviour, IBindable
         _collider.center = _child.localPosition;
     }
 
-    /// <summary>
-    /// Рассчитывает реальный текущий размер объекта в глобальном пространстве.
-    /// </summary>
-    /// <param name="parentLocalScale">Локальный масштаб родительского объекта.</param>
-    /// <returns>Размер объекта в глобальном пространстве.</returns>
-    private Vector3 GetCurrentGlobalScale(Vector3 parentLocalScale) =>
+    public Vector3 GetCurrentGlobalScale(Vector3 parentLocalScale) =>
         new Vector3(_startChildScale.x * parentLocalScale.x,
             _startChildScale.y * parentLocalScale.y,
             _startChildScale.z * parentLocalScale.z);

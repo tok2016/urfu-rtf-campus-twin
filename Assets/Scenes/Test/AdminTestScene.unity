@@ -894,6 +894,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3430214238493505897, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3430214238493505897, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3430214238493505897, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3430214238493505897, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3849663871364485151, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_HorizontalScrollbarSpacing
+      value: -3
+      objectReference: {fileID: 0}
     - target: {fileID: 7032978118945814342, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -905,6 +925,22 @@ PrefabInstance:
     - target: {fileID: 8508366903737726926, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
       propertyPath: m_Name
       value: AdminPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 8585815787847698106, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8585815787847698106, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8625940759252613320, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8625940759252613320, guid: 22048cf567c96da4383e2700a653a8a1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

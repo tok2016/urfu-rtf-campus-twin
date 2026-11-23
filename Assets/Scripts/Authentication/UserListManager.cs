@@ -7,7 +7,10 @@ public class UserListManager : MonoBehaviour
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private GameObject userItemPrefab;
     [SerializeField] private UserDatabase userDatabase;
+    [SerializeField] private AdminPanel adminPanel;
 
+    private Image selectedImage;
+    private Color selectedColor = new Color(0.5f, 0.7f, 1f, 1f);
     void Start()
     {
         UpdateUserList();
@@ -25,8 +28,25 @@ public class UserListManager : MonoBehaviour
         foreach (var user in userDatabase.users)
         {
             GameObject item = Instantiate(userItemPrefab, scrollRect.content);
-            TMP_Text text = item.GetComponent<TMP_Text>();
-            text.text = $"User: {user.username} (Role: {user.role})";
+            TMP_Text text = item.GetComponentInChildren<TMP_Text>();
+            text.text = $"{user.username} : {user.role}";
+
+            //Image image = item.GetComponent<Image>();
+            Button button = item.GetComponentInChildren<Button>();
+            //Color originalColor = image.color;
+            string selectedUsername = user.username;
+            button.onClick.AddListener(() =>
+            {
+                 if (selectedImage != null)
+                {
+                    selectedImage.color = Color.white;
+                }
+
+                // Выделить текущий элемент
+             //   image.color = selectedColor;
+              //  selectedImage = image;
+                adminPanel.SetUsername(selectedUsername);
+            });
         }
     }
 }

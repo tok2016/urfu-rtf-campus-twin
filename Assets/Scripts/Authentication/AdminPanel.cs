@@ -5,24 +5,31 @@ using TMPro;
 
 public class AdminPanel : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField usernameInput;
+    [SerializeField] private string usernameInput;
     [SerializeField] private TMP_Dropdown roleDropdown;
     [SerializeField] private UserDatabase userDatabase;
+     [SerializeField] private UserListManager userListManager;
+
 
     public void AssignRole()
     {
-        string username = usernameInput.text;
         UserRole newRole = (UserRole)roleDropdown.value;
 
         foreach (var user in userDatabase.users)
         {
-            if (user.username == username)
+            if (user.username == usernameInput)
             {
                 user.role = newRole;
                 break;
             }
         }
 
-        Debug.Log("Assigned role " + newRole + " to " + username);
+        Debug.Log("Assigned role " + newRole + " to " + usernameInput);
+        userListManager.UpdateUserList();
+    }
+
+    public void SetUsername(string username)
+    {
+        usernameInput = username;
     }
 }
